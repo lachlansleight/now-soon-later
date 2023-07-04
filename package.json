@@ -1,7 +1,7 @@
 {
     "name": "now-soon-later",
     "author": "@LachlanSleight",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "scripts": {
         "dev": "next dev -p 3570",
         "build": "next build",
@@ -13,8 +13,10 @@
         "test:watch": "jest --watchAll"
     },
     "dependencies": {
+        "@ebay/nice-modal-react": "^1.2.10",
         "axios": "latest",
         "dayjs": "latest",
+        "match-sorter": "^6.3.1",
         "next": "latest",
         "react": "latest",
         "react-dom": "latest",

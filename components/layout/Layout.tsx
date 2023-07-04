@@ -5,7 +5,7 @@ const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
     return (
         <>
             <Head>
-                <title>An Unnamed Space</title>
+                <title>Now / Soon / Later</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main className="min-h-screen bg-neutral-800 text-white w-screen">

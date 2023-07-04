@@ -3,6 +3,7 @@ const TextField = ({
     label,
     value,
     onChange,
+    onFocus,
     placeholder = "",
     type = "text",
 }: {
@@ -10,6 +11,7 @@ const TextField = ({
     label: string;
     value: string;
     onChange?: (value: string) => void;
+    onFocus?: () => void;
     placeholder?: string;
     type?: string;
 }): JSX.Element => {
@@ -24,6 +26,7 @@ const TextField = ({
                 onChange={e => {
                     if (onChange) onChange(e.target.value);
                 }}
+                onFocus={onFocus}
             />
         </div>
     );

@@ -16,9 +16,9 @@ type SettableValue<S> = {
 export type ExampleContext = string;
 
 //The actual context value, only used within this file
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 const exampleContext = createContext<SettableValue<ExampleContext>>({
     value: "foo",
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     setValue: () => {},
 });
 

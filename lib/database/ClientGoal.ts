@@ -10,6 +10,11 @@ class ClientGoal {
         return data;
     }
 
+    public static async getMany() {
+        const data = (await axios(`${ClientGoal.baseUrl}.json`)).data;
+        return data;
+    }
+
     public static async post(goal: Goal) {
         if (!goal) throw new Error("No goal provided");
         console.log(`${ClientGoal.baseUrl}.json`);

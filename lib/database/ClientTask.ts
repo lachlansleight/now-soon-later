@@ -12,6 +12,11 @@ class ClientTask {
         return data;
     }
 
+    public static async getMany() {
+        const data = (await axios(`${ClientTask.baseUrl}.json`)).data;
+        return data;
+    }
+
     public static async post(task: Task) {
         if (!task) throw new Error("No task provided");
         const newId = (await axios.post(`${ClientTask.baseUrl}.json`, { temp: true })).data.name;

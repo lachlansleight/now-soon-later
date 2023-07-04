@@ -17,14 +17,16 @@ const DateField = ({
         dayjs(value).startOf("day").add(12, "hour").format("DD/MM/YYYY")
     );
     const isValid = useMemo(() => {
-        return dayjs(textValue, "DD/MM/YYYY").isValid();
+        return dayjs(textValue, "DD/MM/YYYY").startOf("day").add(12, "hour").isValid();
     }, [textValue]);
 
     useEffect(() => {
         if (!isValid) return;
         if (!onChange) return;
-        onChange(dayjs(textValue, "DD/MM/YYYY").toDate());
-    }, [textValue, isValid, onChange]);
+        const newVal = dayjs(textValue, "DD/MM/YYYY").startOf("day").add(12, "hour").toDate();
+        if (newVal.valueOf() === value.valueOf()) return;
+        onChange(newVal);
+    }, [textValue, isValid, onChange, value]);
 
     return (
         <DateOffsetField
