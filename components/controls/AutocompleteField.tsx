@@ -24,9 +24,11 @@ const AutocompleteField = ({
     autocompleteOptions: AutocompleteOption[];
     onChange?: (newVal: number | string) => void;
 }): JSX.Element => {
-    const [inputValue, setInputValue] = useState("");
+    const [inputValue, setInputValue] = useState(
+        autocompleteOptions.find(o => o.key === value)?.label || ""
+    );
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedIndex, setSelectedIndex] = useState(-1);
+    const [selectedKey, setSelectedKey] = useState(value || "");
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
     const options = useMemo(() => {
@@ -46,7 +48,9 @@ const AutocompleteField = ({
                 if (highlightedIndex < options.length - 1) setHighlightedIndex(cur => cur + 1);
                 e.preventDefault();
             } else if (e.key === "Enter") {
-                setSelectedIndex(highlightedIndex);
+                setSelectedKey(
+                    highlightedIndex === -1 ? "" : (options[highlightedIndex].key as string)
+                );
                 setIsOpen(false);
                 e.preventDefault();
             }
@@ -56,7 +60,7 @@ const AutocompleteField = ({
 
     useEffect(() => {
         if (!inputValue) {
-            setSelectedIndex(-1);
+            setSelectedKey("");
             if (onChange) onChange(-1);
             return;
         }
@@ -76,7 +80,7 @@ const AutocompleteField = ({
         setIsOpen(newOpen);
         if (!set) {
             if (onChange) onChange(-1);
-            setSelectedIndex(-1);
+            setSelectedKey("");
         }
     }, [inputValue, options]);
 
@@ -85,14 +89,24 @@ const AutocompleteField = ({
     }, [isOpen]);
 
     useEffect(() => {
-        if (selectedIndex < 0) return;
-        if (selectedIndex < 0 || options.length === 0) {
+        if (selectedKey === "") return;
+        if (options.length === 0) {
             if (onChange) onChange(-1);
             return;
         }
-        setInputValue(options[selectedIndex].label);
-        if (onChange) onChange(options[selectedIndex].key);
-    }, [selectedIndex, options]);
+        const option = autocompleteOptions.find(o => o.key === selectedKey);
+        if (!option) {
+            if (onChange) onChange(-1);
+            return;
+        }
+
+        console.log({ selectedKey, option, autocompleteOptions, options });
+
+        setInputValue(option.label);
+        if (onChange) onChange(option.key);
+        //setInputValue(options[selectedIndex].label);
+        //if (onChange) onChange(options[selectedIndex].key);
+    }, [selectedKey, options]);
 
     const getListItems = useCallback(() => {
         return options
@@ -108,7 +122,7 @@ const AutocompleteField = ({
                                 : "")
                         }
                         onMouseDown={() => {
-                            setSelectedIndex(index);
+                            setSelectedKey(option.key as string);
                             setIsOpen(false);
                         }}
                         onMouseEnter={() => setHighlightedIndex(index)}

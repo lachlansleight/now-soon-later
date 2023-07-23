@@ -1,7 +1,7 @@
 {
     "name": "now-soon-later",
     "author": "@LachlanSleight",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "scripts": {
         "dev": "next dev -p 3570",
         "build": "next build",

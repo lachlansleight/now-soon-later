@@ -20,6 +20,7 @@ const GoalField = ({
             label="Goal"
             value={value || -1}
             onChange={newVal => {
+                console.log(newVal);
                 if (newVal === -1) onChange(undefined);
                 else onChange(newVal as string);
             }}
