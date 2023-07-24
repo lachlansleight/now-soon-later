@@ -36,6 +36,23 @@ class ClientGoal {
         const data = (await axios.delete(`${ClientGoal.baseUrl}/${id}.json`)).data;
         return data;
     }
+
+    public static async addTask(goalId: string, taskId: string) {
+        if (!goalId) throw new Error("No goal ID provided");
+        if (!taskId) throw new Error("No task ID provided");
+        const data = (
+            await axios.put(`${ClientGoal.baseUrl}/${goalId}/taskIds/${taskId}.json`, true)
+        ).data;
+        return data;
+    }
+
+    public static async removeTask(goalId: string, taskId: string) {
+        if (!goalId) throw new Error("No goal ID provided");
+        if (!taskId) throw new Error("No task ID provided");
+        const data = (await axios.delete(`${ClientGoal.baseUrl}/${goalId}/taskIds/${taskId}.json`))
+            .data;
+        return data;
+    }
 }
 
 export default ClientGoal;

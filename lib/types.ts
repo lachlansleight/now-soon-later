@@ -5,7 +5,7 @@ export interface Item {
     id: string;
     name: string;
     createdAt: Date;
-    completedAt?: Date;
+    completedAt?: Date | null;
     targetDate: Date;
     extendedFrom?: Date[];
     status: ItemStatus;
@@ -29,6 +29,10 @@ export interface PopulatedGoal extends Goal {
     parentGoal?: Goal;
     childGoals?: Goal[];
     tasks?: Task[];
+}
+
+export interface HierarchyGoal extends Goal {
+    childGoals?: HierarchyGoal[];
 }
 
 /** Main interface for tasks */

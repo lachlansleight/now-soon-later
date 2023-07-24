@@ -101,6 +101,16 @@ const ExpandingButton = ({
                                     onClick={e => handleClick(e, option.id)}
                                 >
                                     {option.icon}
+                                    <span
+                                        className={`absolute text-center text-xs w-24 -top-5 text-white ${
+                                            open ? "text-opacity-100" : "text-opacity-0"
+                                        }`}
+                                        style={{
+                                            transition: "all 0.1s",
+                                        }}
+                                    >
+                                        {option.label}
+                                    </span>
                                 </button>
                             );
                         })}

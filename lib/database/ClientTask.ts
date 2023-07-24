@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Task } from "lib/types";
-import DatabaseUtils from "./utils";
+import TaskUtils from "lib/TaskUtils";
 
 class ClientTask {
     private static readonly baseUrl = (process.env.NEXT_PUBLIC_FIREBASE_DATABASE || "") + "/tasks";
@@ -8,7 +8,7 @@ class ClientTask {
     public static async get(id: string) {
         if (!id) throw new Error("No id provided");
         let data = (await axios(`${ClientTask.baseUrl}/${id}.json`)).data;
-        data = DatabaseUtils.deserializeDates(data);
+        data = TaskUtils.deserializeDates(data);
         return data;
     }
 

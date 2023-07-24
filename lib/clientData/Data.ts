@@ -1,3 +1,5 @@
+import GoalUtils from "lib/GoalUtils";
+import TaskUtils from "lib/TaskUtils";
 import { Goal, Task } from "lib/types";
 
 class Data {
@@ -5,8 +7,8 @@ class Data {
     goals: Goal[] = [];
 
     constructor(tasks: Task[], goals: Goal[]) {
-        this.tasks = tasks;
-        this.goals = goals;
+        this.tasks = tasks.map(TaskUtils.deserializeDates);
+        this.goals = goals.map(GoalUtils.deserializeDates).map(GoalUtils.collapseIds);
     }
 
     public getTask(id: string) {

@@ -4,10 +4,10 @@ import { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import Layout from "components/layout/Layout";
 import ClientGoal from "lib/database/ClientGoal";
 import { Goal } from "lib/types";
-import DatabaseUtils from "lib/database/utils";
+import GoalUtils from "lib/GoalUtils";
 
 const GoalPage = ({ serverGoal }: { serverGoal: Goal }): JSX.Element => {
-    const goal = useMemo(() => DatabaseUtils.deserializeDates(serverGoal), [serverGoal]);
+    const goal = useMemo(() => GoalUtils.deserializeDates(serverGoal), [serverGoal]);
     return (
         <Layout>
             <h1 className="text-2xl">{goal.name}</h1>

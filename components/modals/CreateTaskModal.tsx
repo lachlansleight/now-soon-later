@@ -14,8 +14,13 @@ const CreateTaskModal = create(({ task }: { task?: Task }) => {
     const handleSubmit = async (formVal: Task) => {
         setLoading(true);
         if (task) {
-            const editedTask = await ClientTask.patch({ ...formVal, id: task.id });
-            console.log("Edited goal in database: ", editedTask);
+            const patchedTask = { ...formVal, id: task.id };
+            if (formVal.targetDate !== task.targetDate) {
+                if (patchedTask.extendedFrom) patchedTask.extendedFrom.push(task.targetDate);
+                else patchedTask.extendedFrom = [task.targetDate];
+            }
+            const editedTask = await ClientTask.patch(patchedTask);
+            console.log("Edited task in database: ", editedTask);
         } else {
             const newTask = await ClientTask.post(formVal);
             console.log("Created task in database: ", newTask);

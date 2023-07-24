@@ -3,10 +3,12 @@ import { Goal } from "lib/types";
 import AutocompleteField from "./AutocompleteField";
 
 const GoalField = ({
+    label = "Goal",
     value,
     onChange,
     goals,
 }: {
+    label?: string;
     value: string | undefined;
     onChange: (newVal: string | undefined) => void;
     goals: Goal[];
@@ -17,7 +19,7 @@ const GoalField = ({
 
     return (
         <AutocompleteField
-            label="Goal"
+            label={label}
             value={value || -1}
             onChange={newVal => {
                 console.log(newVal);

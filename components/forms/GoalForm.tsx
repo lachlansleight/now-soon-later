@@ -5,6 +5,8 @@ import DateField from "components/controls/DateField";
 import TextField from "components/controls/TextField";
 import { Goal } from "lib/types";
 import Button from "components/controls/Button";
+import useData from "lib/clientData/useData";
+import GoalField from "components/controls/GoalField";
 
 const GoalForm = ({
     goal,
@@ -15,6 +17,8 @@ const GoalForm = ({
     onSubmit: (goal: Goal) => void;
     loading?: boolean;
 }): JSX.Element => {
+    const { data } = useData();
+
     const [value, setValue] = useState<Goal>(
         goal || {
             id: "",
@@ -24,6 +28,14 @@ const GoalForm = ({
             status: "active",
         }
     );
+
+    if (!data) {
+        return (
+            <div>
+                <FaSync className="animate-spin text-4xl" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col gap-2">
@@ -42,6 +54,12 @@ const GoalForm = ({
                 label="Target Date"
                 value={value.targetDate}
                 onChange={v => setValue(cur => ({ ...cur, targetDate: v }))}
+            />
+            <GoalField
+                label="Parent Goal"
+                goals={data.goals}
+                value={value.parentGoalId}
+                onChange={v => setValue(cur => ({ ...cur, goalId: v }))}
             />
             <Button
                 className="grid place-items-center py-1 mt-4"

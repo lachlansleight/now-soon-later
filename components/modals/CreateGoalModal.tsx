@@ -14,6 +14,11 @@ const CreateGoalModal = create(({ goal }: { goal?: Goal }) => {
     const handleSubmit = async (formVal: Goal) => {
         setLoading(true);
         if (goal) {
+            const patchedGoal = { ...formVal, id: goal.id };
+            if (formVal.targetDate !== goal.targetDate) {
+                if (patchedGoal.extendedFrom) patchedGoal.extendedFrom.push(goal.targetDate);
+                else patchedGoal.extendedFrom = [goal.targetDate];
+            }
             const editedGoal = await ClientGoal.patch({ ...formVal, id: goal.id });
             console.log("Edited goal in database: ", editedGoal);
         } else {
