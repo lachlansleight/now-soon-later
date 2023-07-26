@@ -7,6 +7,7 @@ import { Task } from "lib/types";
 import Button from "components/controls/Button";
 import useData from "lib/clientData/useData";
 import GoalField from "components/controls/GoalField";
+import ComplexDateField from "components/controls/ComplexDateField";
 
 const TaskForm = ({
     task,
@@ -51,7 +52,7 @@ const TaskForm = ({
                 value={value.createdAt}
                 onChange={v => setValue(cur => ({ ...cur, createdAt: v }))}
             />
-            <DateField
+            <ComplexDateField
                 label="Target Date"
                 value={value.targetDate}
                 onChange={v => setValue(cur => ({ ...cur, targetDate: v }))}
