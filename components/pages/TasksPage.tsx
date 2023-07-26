@@ -62,19 +62,12 @@ const TasksPage = ({
         return (
             data?.tasks
                 .filter(t => {
-                    if (
-                        dayjs(t.targetDate).isSame(
-                            thisWeekTasks.length > 0 ? dayjs() : dayjs().add(7, "day"),
-                            "isoWeek"
-                        )
-                    )
-                        return false;
-                    if (
-                        dayjs(t.targetDate).diff(dayjs(), "day") < 30 &&
-                        dayjs(t.targetDate).isAfter(dayjs())
-                    )
-                        return true;
-                    return false;
+                    if (thisWeekTasks.length > 0) {
+                        if (dayjs(t.targetDate).isSame(dayjs().add(7, "day"), "isoWeek"))
+                            return false;
+                    }
+                    if (dayjs(t.targetDate).isSame(dayjs(), "isoWeek")) return false;
+                    return true;
                 })
                 .sort((a, b) => a.targetDate.valueOf() - b.targetDate.valueOf()) || []
         );

@@ -74,7 +74,7 @@ const TaskCard = ({
                     </span>
                 </div>
                 <div
-                    className={`relative grid place-items-center border border-white border-opacity-50 rounded-lg bg-neutral-900 w-6 h-6 ${
+                    className={`relative grid place-items-center border border-white border-opacity-50 rounded-lg bg-neutral-900 w-6 h-6 shrink-0 ${
                         changingComplete ? "cursor-progress" : ""
                     }`}
                     onClick={handleToggleClick}
