@@ -15,9 +15,22 @@ const TasksPage = ({
     data: Data;
     onTaskClick: (task: Task) => void;
 }): JSX.Element => {
+    const filteredTasks = useMemo<Task[]>(() => {
+        if (!data.tasks) return [];
+
+        return data.tasks.filter(t => {
+            //tasks marked complete or cancelled stay in the list for one day
+            if (t.status === "complete" && dayjs(t.completedAt).diff(dayjs(), "day") < -1)
+                return false;
+            if (t.status === "cancel" && dayjs(t.cancelledAt).diff(dayjs(), "day") < -1)
+                return false;
+            return true;
+        });
+    }, [data]);
+
     const todayTasks = useMemo(() => {
         return (
-            data?.tasks
+            filteredTasks
                 .filter(t => {
                     if (dayjs(t.targetDate).isSame(dayjs(), "day")) return true;
                     if (dayjs(t.targetDate).isBefore(dayjs(), "day")) return true;
@@ -25,20 +38,20 @@ const TasksPage = ({
                 })
                 .sort((a, b) => a.targetDate.valueOf() - b.targetDate.valueOf()) || []
         );
-    }, [data]);
+    }, [filteredTasks]);
     const tomorrowTasks = useMemo(() => {
         return (
-            data?.tasks
+            filteredTasks
                 .filter(t => {
                     if (dayjs(t.targetDate).isSame(dayjs().add(1, "day"), "day")) return true;
                     return false;
                 })
                 .sort((a, b) => a.targetDate.valueOf() - b.targetDate.valueOf()) || []
         );
-    }, [data]);
+    }, [filteredTasks]);
     const thisWeekTasks = useMemo(() => {
         return (
-            data?.tasks
+            filteredTasks
                 .filter(t => {
                     if (!dayjs(t.targetDate).isSame(dayjs(), "isoWeek")) return false;
                     const dayOffset = dayjs(t.targetDate).diff(dayjs(), "day");
@@ -47,20 +60,20 @@ const TasksPage = ({
                 })
                 .sort((a, b) => a.targetDate.valueOf() - b.targetDate.valueOf()) || []
         );
-    }, [data]);
+    }, [filteredTasks]);
     const nextWeekTasks = useMemo(() => {
         return (
-            data?.tasks
+            filteredTasks
                 .filter(t => {
                     if (!dayjs(t.targetDate).isSame(dayjs().add(7, "day"), "isoWeek")) return false;
                     return true;
                 })
                 .sort((a, b) => a.targetDate.valueOf() - b.targetDate.valueOf()) || []
         );
-    }, [data]);
+    }, [filteredTasks]);
     const soonTasks = useMemo(() => {
         return (
-            data?.tasks
+            filteredTasks
                 .filter(t => {
                     if (thisWeekTasks.length > 0) {
                         if (dayjs(t.targetDate).isSame(dayjs().add(7, "day"), "isoWeek"))
@@ -74,14 +87,14 @@ const TasksPage = ({
     }, [data, thisWeekTasks]);
     const laterTasks = useMemo(() => {
         return (
-            data?.tasks
+            filteredTasks
                 .filter(t => {
                     if (dayjs(t.targetDate).diff(dayjs(), "day") > 30) return true;
                     return false;
                 })
                 .sort((a, b) => a.targetDate.valueOf() - b.targetDate.valueOf()) || []
         );
-    }, [data]);
+    }, [filteredTasks]);
 
     if (!data)
         return (

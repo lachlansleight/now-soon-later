@@ -6,6 +6,7 @@ export interface Item {
     name: string;
     createdAt: Date;
     completedAt?: Date | null;
+    cancelledAt?: Date | null;
     targetDate: Date;
     extendedFrom?: Date[];
     status: ItemStatus;
