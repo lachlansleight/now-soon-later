@@ -17,6 +17,15 @@ class TaskUtils {
     static sortByTargetDate(a: Task, b: Task): number {
         return a.targetDate.valueOf() - b.targetDate.valueOf();
     }
+
+    static sortByStatus(a: Task, b: Task): number {
+        const statusVals = {
+            cancel: 0,
+            complete: 1,
+            active: 2,
+        };
+        return statusVals[b.status] - statusVals[a.status];
+    }
 }
 
 export default TaskUtils;

@@ -20,12 +20,15 @@ const Modal = ({
             style={{
                 width: "calc(100vw - 0.5rem)",
             }}
-            onClick={() => {
+            onMouseDown={() => {
                 if (onBgClick) onBgClick();
             }}
         >
             <div className="w-full md:w-auto px-4 md:px-0">
-                <div className={`bg-neutral-800 p-4 shadow-md rounded ${opacity} transition-all`}>
+                <div
+                    onMouseDown={e => e.stopPropagation()}
+                    className={`bg-neutral-800 p-4 shadow-md rounded ${opacity} transition-all`}
+                >
                     {children}
                 </div>
             </div>

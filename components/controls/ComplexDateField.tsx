@@ -55,7 +55,10 @@ const ComplexDateField = ({
         if (d.isSame(dayjs(), "day")) return "Today";
         if (d.isSame(dayjs().add(1, "day"), "day")) return "Tomorrow";
         if (d.isSame(dayjs(), "isoWeek")) return "This " + d.format("dddd");
-        if (d.isSame(dayjs().add(7, "day"), "isoWeek")) return "Next " + d.format("dddd");
+        if (d.isSame(dayjs().add(7, "day"), "isoWeek")) {
+            if (d.isoWeekday() < dayjs().isoWeekday()) return "This coming " + d.format("dddd");
+            else return "Next " + d.format("dddd");
+        }
         if (d.isSame(dayjs(), "year")) return d.format("dddd, Do MMMM");
         return d.format("Do MMMM YYYY");
     };

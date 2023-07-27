@@ -40,7 +40,7 @@ const CreateTaskModal = create(({ task }: { task?: Task }) => {
                 modal.remove();
             }}
         >
-            <div onClick={e => e.stopPropagation()} className="w-auto lg:w-[50vw]">
+            <div className="w-auto lg:w-[50vw]">
                 <TaskForm task={task} onSubmit={handleSubmit} loading={loading} />
             </div>
         </Modal>

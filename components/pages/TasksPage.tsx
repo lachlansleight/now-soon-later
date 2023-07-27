@@ -5,6 +5,7 @@ import isoWeek from "dayjs/plugin/isoWeek";
 import TaskCard from "components/items/TaskCard";
 import Data from "lib/clientData/Data";
 import { Task } from "lib/types";
+import TaskUtils from "lib/TaskUtils";
 
 dayjs.extend(isoWeek);
 
@@ -36,7 +37,8 @@ const TasksPage = ({
                     if (dayjs(t.targetDate).isBefore(dayjs(), "day")) return true;
                     return false;
                 })
-                .sort((a, b) => a.targetDate.valueOf() - b.targetDate.valueOf()) || []
+                .sort(TaskUtils.sortByTargetDate)
+                .sort(TaskUtils.sortByStatus) || []
         );
     }, [filteredTasks]);
     const tomorrowTasks = useMemo(() => {
@@ -46,7 +48,8 @@ const TasksPage = ({
                     if (dayjs(t.targetDate).isSame(dayjs().add(1, "day"), "day")) return true;
                     return false;
                 })
-                .sort((a, b) => a.targetDate.valueOf() - b.targetDate.valueOf()) || []
+                .sort(TaskUtils.sortByTargetDate)
+                .sort(TaskUtils.sortByStatus) || []
         );
     }, [filteredTasks]);
     const thisWeekTasks = useMemo(() => {
@@ -58,7 +61,8 @@ const TasksPage = ({
                     if (dayOffset < 2) return false;
                     return true;
                 })
-                .sort((a, b) => a.targetDate.valueOf() - b.targetDate.valueOf()) || []
+                .sort(TaskUtils.sortByTargetDate)
+                .sort(TaskUtils.sortByStatus) || []
         );
     }, [filteredTasks]);
     const nextWeekTasks = useMemo(() => {
@@ -68,21 +72,23 @@ const TasksPage = ({
                     if (!dayjs(t.targetDate).isSame(dayjs().add(7, "day"), "isoWeek")) return false;
                     return true;
                 })
-                .sort((a, b) => a.targetDate.valueOf() - b.targetDate.valueOf()) || []
+                .sort(TaskUtils.sortByTargetDate)
+                .sort(TaskUtils.sortByStatus) || []
         );
     }, [filteredTasks]);
     const soonTasks = useMemo(() => {
         return (
             filteredTasks
                 .filter(t => {
-                    if (thisWeekTasks.length > 0) {
+                    if (dayjs(t.targetDate).isSame(dayjs(), "isoWeek")) return false;
+                    if (thisWeekTasks.length === 0) {
                         if (dayjs(t.targetDate).isSame(dayjs().add(7, "day"), "isoWeek"))
                             return false;
                     }
-                    if (dayjs(t.targetDate).isSame(dayjs(), "isoWeek")) return false;
                     return true;
                 })
-                .sort((a, b) => a.targetDate.valueOf() - b.targetDate.valueOf()) || []
+                .sort(TaskUtils.sortByTargetDate)
+                .sort(TaskUtils.sortByStatus) || []
         );
     }, [data, thisWeekTasks]);
     const laterTasks = useMemo(() => {
@@ -92,7 +98,8 @@ const TasksPage = ({
                     if (dayjs(t.targetDate).diff(dayjs(), "day") > 30) return true;
                     return false;
                 })
-                .sort((a, b) => a.targetDate.valueOf() - b.targetDate.valueOf()) || []
+                .sort(TaskUtils.sortByTargetDate)
+                .sort(TaskUtils.sortByStatus) || []
         );
     }, [filteredTasks]);
 
