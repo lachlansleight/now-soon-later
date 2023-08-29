@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FaCheck, FaTrophy } from "react-icons/fa";
+import { FaCheck, FaTimes, FaTrophy } from "react-icons/fa";
 import useData from "lib/clientData/useData";
 import { Task } from "lib/types";
 import ClientTask from "lib/database/ClientTask";
@@ -53,19 +53,27 @@ const TaskCard = ({
 
     return (
         <div
-            className="bg-neutral-700 rounded shadow-md px-2 py-1 cursor-pointer"
+            className={`bg-neutral-700 ${
+                task.status === "cancel" ? "bg-opacity-30" : ""
+            } rounded shadow-md px-2 py-1 cursor-pointer`}
             onClick={() => {
                 if (onClick) onClick(task);
             }}
         >
             <div className="flex justify-between">
                 <div>
-                    <h3 className="text-xl m-0 leading-none">{task.name}</h3>
+                    <h3
+                        className={`text-xl m-0 leading-none ${
+                            task.status === "cancel" ? "line-through" : ""
+                        }`}
+                    >
+                        {task.name}
+                    </h3>
                     <span
                         className={`${
                             localComplete
                                 ? "bg-green-900"
-                                : isOverdue
+                                : isOverdue && task.status !== "cancel"
                                 ? "bg-red-900 bg-opacity-50"
                                 : "bg-neutral-800"
                         } px-2 text-xs rounded-full text-neutral-300`}
@@ -81,6 +89,15 @@ const TaskCard = ({
                 >
                     {localComplete && (
                         <FaCheck className="relative text-2xl -top-0.5 left-0.5 text-green-400" />
+                    )}
+                    {task.status === "cancel" && (
+                        <FaTimes
+                            className="relative text-2xl text-red-400"
+                            style={{
+                                left: -0.4,
+                                top: -0.75,
+                            }}
+                        />
                     )}
                 </div>
             </div>
