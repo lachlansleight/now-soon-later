@@ -30,6 +30,14 @@ const CreateTaskModal = create(({ task }: { task?: Task }) => {
         modal.remove();
     };
 
+    const setCancelled = (task: Task, cancel: boolean) => {
+        handleSubmit({
+            ...task,
+            status: cancel ? "cancel" : task.completedAt ? "complete" : "active",
+            cancelledAt: cancel ? new Date() : null,
+        });
+    };
+
     useKeyboard(e => {
         if (e.key === "Escape") modal.remove();
     }, []);
@@ -41,7 +49,12 @@ const CreateTaskModal = create(({ task }: { task?: Task }) => {
             }}
         >
             <div className="w-auto lg:w-[50vw]">
-                <TaskForm task={task} onSubmit={handleSubmit} loading={loading} />
+                <TaskForm
+                    task={task}
+                    onSubmit={handleSubmit}
+                    onCancelChange={setCancelled}
+                    loading={loading}
+                />
             </div>
         </Modal>
     );
