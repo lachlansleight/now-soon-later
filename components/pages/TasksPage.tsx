@@ -9,6 +9,30 @@ import TaskUtils from "lib/TaskUtils";
 
 dayjs.extend(isoWeek);
 
+const TasksPageColumn = ({
+    title,
+    height,
+    tasks,
+    onTaskClick,
+}: {
+    title: string;
+    height: number | string;
+    tasks: Task[];
+    onTaskClick?: (task: Task) => void;
+}) => {
+    return (
+        <div
+            className="flex flex-col gap-2 my-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-neutral-800"
+            style={{ height }}
+        >
+            <h1 className="text-3xl text-center">{title}</h1>
+            {tasks.map(task => (
+                <TaskCard key={task.id} task={task} onClick={onTaskClick} />
+            ))}
+        </div>
+    );
+};
+
 const TasksPage = ({
     data,
     onTaskClick,
@@ -29,64 +53,60 @@ const TasksPage = ({
         });
     }, [data]);
 
+    const taskLocations = useMemo(() => {
+        return filteredTasks.map(task => {
+            if (dayjs(task.targetDate).isSame(dayjs(), "day"))
+                return { id: task.id, location: "today" };
+            if (dayjs(task.targetDate).diff(dayjs(), "day") < 0)
+                return { id: task.id, location: "today" };
+            if (dayjs(task.targetDate).isSame(dayjs().add(1, "day"), "day"))
+                return { id: task.id, location: "tomorrow" };
+            if (dayjs(task.targetDate).isSame(dayjs(), "isoWeek"))
+                return { id: task.id, location: "thisWeek" };
+            if (dayjs(task.targetDate).isSame(dayjs().add(1, "week"), "isoWeek"))
+                return { id: task.id, location: "nextWeek" };
+            if (dayjs(task.targetDate).diff(dayjs(), "day") < 30)
+                return { id: task.id, location: "soon" };
+            return { id: task.id, location: "later" };
+        });
+    }, [filteredTasks]);
+
     const todayTasks = useMemo(() => {
         return (
             filteredTasks
-                .filter(t => {
-                    if (dayjs(t.targetDate).isSame(dayjs(), "day")) return true;
-                    if (dayjs(t.targetDate).isBefore(dayjs(), "day")) return true;
-                    return false;
-                })
+                .filter(t => taskLocations.find(l => l.id === t.id)?.location === "today")
                 .sort(TaskUtils.sortByTargetDate)
                 .sort(TaskUtils.sortByStatus) || []
         );
-    }, [filteredTasks]);
+    }, [filteredTasks, taskLocations]);
     const tomorrowTasks = useMemo(() => {
         return (
             filteredTasks
-                .filter(t => {
-                    if (dayjs(t.targetDate).isSame(dayjs().add(1, "day"), "day")) return true;
-                    return false;
-                })
+                .filter(t => taskLocations.find(l => l.id === t.id)?.location === "tomorrow")
                 .sort(TaskUtils.sortByTargetDate)
                 .sort(TaskUtils.sortByStatus) || []
         );
-    }, [filteredTasks]);
+    }, [filteredTasks, taskLocations]);
     const thisWeekTasks = useMemo(() => {
         return (
             filteredTasks
-                .filter(t => {
-                    if (!dayjs(t.targetDate).isSame(dayjs(), "isoWeek")) return false;
-                    const dayOffset = dayjs(t.targetDate).diff(dayjs(), "day");
-                    if (dayOffset < 2) return false;
-                    return true;
-                })
+                .filter(t => taskLocations.find(l => l.id === t.id)?.location === "thisWeek")
                 .sort(TaskUtils.sortByTargetDate)
                 .sort(TaskUtils.sortByStatus) || []
         );
-    }, [filteredTasks]);
+    }, [filteredTasks, taskLocations]);
     const nextWeekTasks = useMemo(() => {
         return (
             filteredTasks
-                .filter(t => {
-                    if (!dayjs(t.targetDate).isSame(dayjs().add(7, "day"), "isoWeek")) return false;
-                    return true;
-                })
+                .filter(t => taskLocations.find(l => l.id === t.id)?.location === "nextWeek")
                 .sort(TaskUtils.sortByTargetDate)
                 .sort(TaskUtils.sortByStatus) || []
         );
-    }, [filteredTasks]);
+    }, [filteredTasks, taskLocations]);
     const soonTasks = useMemo(() => {
         return (
             filteredTasks
-                .filter(t => {
-                    if (dayjs(t.targetDate).isSame(dayjs(), "isoWeek")) return false;
-                    if (thisWeekTasks.length === 0) {
-                        if (dayjs(t.targetDate).isSame(dayjs().add(7, "day"), "isoWeek"))
-                            return false;
-                    }
-                    return true;
-                })
+                .filter(t => taskLocations.find(l => l.id === t.id)?.location === "soon")
                 .sort(TaskUtils.sortByTargetDate)
                 .sort(TaskUtils.sortByStatus) || []
         );
@@ -94,14 +114,11 @@ const TasksPage = ({
     const laterTasks = useMemo(() => {
         return (
             filteredTasks
-                .filter(t => {
-                    if (dayjs(t.targetDate).diff(dayjs(), "day") > 30) return true;
-                    return false;
-                })
+                .filter(t => taskLocations.find(l => l.id === t.id)?.location === "later")
                 .sort(TaskUtils.sortByTargetDate)
                 .sort(TaskUtils.sortByStatus) || []
         );
-    }, [filteredTasks]);
+    }, [filteredTasks, taskLocations]);
 
     if (!data)
         return (
@@ -114,45 +131,45 @@ const TasksPage = ({
         <>
             {/* {loading ? <FaSync className="text-4xl animate-spin" /> : <pre>{JSON.stringify(data, null, 2)}</pre>} */}
             <div className="grid grid-cols-0 lg:grid-cols-5 gap-4">
-                <div className="flex flex-col gap-2 my-2">
-                    <h1 className="text-3xl text-center">Today</h1>
-                    {todayTasks.map(task => (
-                        <TaskCard key={task.id} task={task} onClick={onTaskClick} />
-                    ))}
-                </div>
-                <div className="flex flex-col gap-2 my-2">
-                    <h1 className="text-3xl text-center">Tomorrow</h1>
-                    {tomorrowTasks.map(task => (
-                        <TaskCard key={task.id} task={task} onClick={onTaskClick} />
-                    ))}
-                </div>
+                <TasksPageColumn
+                    title="Today"
+                    height="calc(100vh - 7.9rem)"
+                    tasks={todayTasks}
+                    onTaskClick={onTaskClick}
+                />
+                <TasksPageColumn
+                    title="Tomorrow"
+                    height="calc(100vh - 7.9rem)"
+                    tasks={tomorrowTasks}
+                    onTaskClick={onTaskClick}
+                />
                 {thisWeekTasks.length > 0 ? (
-                    <div className="flex flex-col gap-2 my-2">
-                        <h1 className="text-3xl text-center">This Week</h1>
-                        {thisWeekTasks.map(task => (
-                            <TaskCard key={task.id} task={task} onClick={onTaskClick} />
-                        ))}
-                    </div>
+                    <TasksPageColumn
+                        title="This Week"
+                        height="calc(100vh - 7.9rem)"
+                        tasks={thisWeekTasks}
+                        onTaskClick={onTaskClick}
+                    />
                 ) : (
-                    <div className="flex flex-col gap-2 my-2">
-                        <h1 className="text-3xl text-center">Next Week</h1>
-                        {nextWeekTasks.map(task => (
-                            <TaskCard key={task.id} task={task} onClick={onTaskClick} />
-                        ))}
-                    </div>
+                    <TasksPageColumn
+                        title="Next Week"
+                        height="calc(100vh - 7.9rem)"
+                        tasks={nextWeekTasks}
+                        onTaskClick={onTaskClick}
+                    />
                 )}
-                <div className="flex flex-col gap-2 my-2">
-                    <h1 className="text-3xl text-center">Soon</h1>
-                    {soonTasks.map(task => (
-                        <TaskCard key={task.id} task={task} onClick={onTaskClick} />
-                    ))}
-                </div>
-                <div className="flex flex-col gap-2 my-2">
-                    <h1 className="text-3xl text-center">Later</h1>
-                    {laterTasks.map(task => (
-                        <TaskCard key={task.id} task={task} onClick={onTaskClick} />
-                    ))}
-                </div>
+                <TasksPageColumn
+                    title="Soon"
+                    height="calc(100vh - 7.9rem)"
+                    tasks={soonTasks}
+                    onTaskClick={onTaskClick}
+                />
+                <TasksPageColumn
+                    title="Later"
+                    height="calc(100vh - 7.9rem)"
+                    tasks={laterTasks}
+                    onTaskClick={onTaskClick}
+                />
             </div>
         </>
     );
