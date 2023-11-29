@@ -65,7 +65,7 @@ const TasksPage = ({
                 return { id: task.id, location: "thisWeek" };
             if (dayjs(task.targetDate).isSame(dayjs().add(1, "week"), "isoWeek"))
                 return { id: task.id, location: "nextWeek" };
-            if (dayjs(task.targetDate).diff(dayjs(), "day") < 30)
+            if (dayjs(task.targetDate).diff(dayjs(), "day") < 21)
                 return { id: task.id, location: "soon" };
             return { id: task.id, location: "later" };
         });
@@ -106,7 +106,13 @@ const TasksPage = ({
     const soonTasks = useMemo(() => {
         return (
             filteredTasks
-                .filter(t => taskLocations.find(l => l.id === t.id)?.location === "soon")
+                .filter(t => {
+                    if (taskLocations.find(l => l.id === t.id)?.location === "soon") return true;
+                    return (
+                        thisWeekTasks.length > 0 &&
+                        taskLocations.find(l => l.id === t.id)?.location === "nextWeek"
+                    );
+                })
                 .sort(TaskUtils.sortByTargetDate)
                 .sort(TaskUtils.sortByStatus) || []
         );
