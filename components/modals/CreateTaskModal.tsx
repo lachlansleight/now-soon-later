@@ -11,22 +11,27 @@ const CreateTaskModal = create(({ task }: { task?: Task }) => {
     const modal = useModal();
     const { revalidate } = useData();
     const [loading, setLoading] = useState(false);
-    const handleSubmit = async (formVal: Task) => {
+
+    const submitTask = async (task: Task) => {
         setLoading(true);
-        if (task) {
-            const patchedTask = { ...formVal, id: task.id };
-            if (formVal.targetDate !== task.targetDate) {
+        if (task && task.id) {
+            const patchedTask = { ...task, id: task.id };
+            if (task.targetDate !== task.targetDate) {
                 if (patchedTask.extendedFrom) patchedTask.extendedFrom.push(task.targetDate);
                 else patchedTask.extendedFrom = [task.targetDate];
             }
             const editedTask = await ClientTask.patch(patchedTask);
             console.log("Edited task in database: ", editedTask);
         } else {
-            const newTask = await ClientTask.post(formVal);
+            const newTask = await ClientTask.post(task);
             console.log("Created task in database: ", newTask);
         }
-        setLoading(false);
         revalidate();
+        setLoading(false);
+    };
+
+    const handleSubmit = async (formVal: Task) => {
+        await submitTask(formVal);
         modal.remove();
     };
 
@@ -52,6 +57,7 @@ const CreateTaskModal = create(({ task }: { task?: Task }) => {
                 <TaskForm
                     task={task}
                     onSubmit={handleSubmit}
+                    onSubmitNoClose={submitTask}
                     onCancelChange={setCancelled}
                     loading={loading}
                 />

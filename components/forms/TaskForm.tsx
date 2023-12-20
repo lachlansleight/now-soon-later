@@ -8,16 +8,19 @@ import Button from "components/controls/Button";
 import useData from "lib/clientData/useData";
 import GoalField from "components/controls/GoalField";
 import ComplexDateField from "components/controls/ComplexDateField";
+import SubtasksField from "components/controls/SubtasksField";
 
 const TaskForm = ({
     task,
     onSubmit,
+    onSubmitNoClose,
     onCancelChange,
     loading = false,
     className = "",
 }: {
     task?: Task;
     onSubmit: (task: Task) => void;
+    onSubmitNoClose: (task: Task) => void;
     onCancelChange: (task: Task, cancelled: boolean) => void;
     loading?: boolean;
     className?: string;
@@ -63,6 +66,14 @@ const TaskForm = ({
                 goals={data.goals}
                 value={value.goalId}
                 onChange={v => setValue(cur => ({ ...cur, goalId: v }))}
+            />
+            <SubtasksField
+                value={value.subtasks}
+                onChange={v => {
+                    const newVal = { ...value, subtasks: v };
+                    setValue(newVal);
+                    onSubmitNoClose(newVal);
+                }}
             />
             <div className="flex gap-4 mt-4">
                 {task?.cancelledAt ? (

@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FaCheck, FaTimes, FaTrophy } from "react-icons/fa";
+import { BiCheckbox, BiCheckboxMinus, BiCheckboxChecked } from "react-icons/bi";
 import useData from "lib/clientData/useData";
 import { Task } from "lib/types";
 import ClientTask from "lib/database/ClientTask";
@@ -50,6 +51,21 @@ const TaskCard = ({
             });
         }
     }, [task, localComplete]);
+
+    const subtaskCompletion = useMemo<{
+        tasks: number;
+        complete: number;
+        mode: "no-tasks" | "none" | "some" | "all";
+    }>(() => {
+        if (!task.subtasks) return { tasks: 0, complete: 0, mode: "no-tasks" };
+        if (task.subtasks.length === 0) return { tasks: 0, complete: 0, mode: "no-tasks" };
+        const completed = task.subtasks.reduce((acc, cur) => acc + (cur.completed ? 1 : 0), 0);
+        return {
+            tasks: task.subtasks.length,
+            complete: completed,
+            mode: completed === 0 ? "none" : completed === task.subtasks.length ? "all" : "some",
+        };
+    }, [task.subtasks]);
 
     return (
         <div
@@ -101,6 +117,28 @@ const TaskCard = ({
                     )}
                 </div>
             </div>
+            {task.subtasks?.length && (
+                <div
+                    className={`flex items-center 
+                    ${subtaskCompletion.mode === "none" ? "text-red-200" : ""}
+                    ${subtaskCompletion.mode === "some" ? "text-yellow-200" : ""}
+                    ${subtaskCompletion.mode === "all" ? "text-green-200" : ""}
+                    `}
+                >
+                    <span className="text-3xl">
+                        {subtaskCompletion.mode === "none" ? (
+                            <BiCheckbox />
+                        ) : subtaskCompletion.mode === "some" ? (
+                            <BiCheckboxMinus />
+                        ) : (
+                            <BiCheckboxChecked />
+                        )}
+                    </span>
+                    <span className="text-sm">
+                        {subtaskCompletion.complete} / {subtaskCompletion.tasks}
+                    </span>
+                </div>
+            )}
             {goal && (
                 <>
                     <hr className="-mx-2 my-2 border-white border-opacity-20" />

@@ -16,6 +16,12 @@ export interface Item {
         date: Date;
         text: string;
     }[];
+    subtasks?: Subtask[];
+}
+
+export interface Subtask {
+    name: string;
+    completed: boolean;
 }
 
 /** Main interface for goals - can have parents and children */
