@@ -57,7 +57,7 @@ const TasksPage = ({
         return filteredTasks.map(task => {
             if (dayjs(task.targetDate).isSame(dayjs(), "day"))
                 return { id: task.id, location: "today" };
-            if (dayjs(task.targetDate).diff(dayjs(), "day") < 0)
+            if (dayjs(task.targetDate).diff(dayjs(), "hour") < 0)
                 return { id: task.id, location: "today" };
             if (dayjs(task.targetDate).isSame(dayjs().add(1, "day"), "day"))
                 return { id: task.id, location: "tomorrow" };
